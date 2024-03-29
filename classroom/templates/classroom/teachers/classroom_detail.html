@@ -1,0 +1,177 @@
+{% extends 'users/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}{{ classroom.title }}{% endblock %}
+
+{% block content %}
+
+{% with course=classroom.course %}
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2>{{ classroom.title }}</h2>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Student Capacity:</dt>
+                        <dd class="col-sm-8">{{ classroom.student_count }}</dd>
+
+                        <dt class="col-sm-4">Subject:</dt>
+                        <dd class="col-sm-8">{{ classroom.subject }}</dd>
+
+                        <dt class="col-sm-4">Active:</dt>
+                        <dd class="col-sm-8">{{ classroom.active }}</dd>
+
+                        <dt class="col-sm-4">Start date:</dt>
+                        <dd class="col-sm-8">{{ classroom.start_date }}</dd>
+
+                        <dt class="col-sm-4">End date:</dt>
+                        <dd class="col-sm-8">{{ classroom.end_date }}</dd>
+
+                        <dt class="col-sm-4">Current Course:</dt>
+                        <dd class="col-sm-8 current-course">
+                            {% if course %}
+                                {{ course }}
+                            {% else %}
+                                No current course
+                            {% endif %}
+                        </dd>
+                    </dl>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <button id="teacher-courses" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#courseModal">
+                                {% if classroom.course %}
+                                    Enrolled
+                                {% else %}
+                                    Enroll on a course
+                                {% endif %}
+                            </button>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="courseModal" tabindex="-1" aria-labelledby="courseModalLabel" aria-hidden="true">
+                              <div class="modal-dialog">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="courseModalLabel">
+                                        {% if course %}
+                                            Classroom enrolled on {{ course }}
+                                        {% else %}
+                                            Choose course to enroll
+                                        {% endif %}
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                  </div>
+                                  <div class="modal-body" id="modalBody">
+
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button id="modalSubmit" type="button" class="btn btn-primary">Enroll</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <button class="btn btn-secondary {% if not classroom.active %}disabled{% endif %}">Students</button>
+                        </div>
+                        <div class="col-lg-4">
+                            <button class="btn btn-secondary {% if not classroom.active %}disabled{% endif %}">Results</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const csrfTokenforEnroll = Cookies.get('csrftoken');
+    courses = "{% url 'classroom:teacher-courses' classroom.pk %}";
+    document.getElementById('courseModal').addEventListener('shown.bs.modal', function() {
+        fetch(courses)
+            .then(response => response.json())
+            .then(data => {
+                modalBody = document.getElementById('modalBody');
+                modalBody.innerHTML = '';
+                for (let courseName of data) {
+                    // Create form-check div
+                    formCheckDiv = document.createElement('div');
+                    formCheckDiv.classList.add('form-check');
+
+                    // Create Input/Label elements
+                    formCheckInput = document.createElement('input');
+                    formCheckInput.classList.add('form-check-input');
+                    formCheckInput.type = 'checkbox';
+                    formCheckInput.id = courseName;
+                    formCheckInput.value = courseName;
+
+                    formCheckLabel = document.createElement('label');
+                    formCheckLabel.classList.add('form-check-label');
+                    formCheckLabel.textContent = courseName;
+
+                    // append to form-check element
+                    formCheckDiv.appendChild(formCheckInput);
+                    formCheckDiv.appendChild(formCheckLabel);
+
+                    // append to modal body
+                    modalBody.appendChild(formCheckDiv);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error)
+                modalBody = document.getElementById('modalBody');
+                modalBody.innerHTML = 'An error occurred. Please try again or contact support.';
+            })
+    });
+    modalSubmitButton = document.getElementById('modalSubmit');
+
+    function enroll() {
+        enrollUrl = "{% url 'classroom:enroll-classroom' classroom.id %}";
+        let options = {
+            'method': 'POST',
+            'headers': {'X-CSRFToken': csrfTokenforEnroll}
+        }
+        let courseName = document.querySelector('input[type="checkbox"]:checked');
+        options['body'] = JSON.stringify(courseName.value)
+        fetch(enrollUrl, options)
+            .then(response => response.json())
+            .then(data => {
+                if (data['status']==='ok') {
+                    modalEl = document.getElementById('courseModal');
+                    modalIn = bootstrap.Modal.getInstance(modalEl);
+                    modalIn.hide();
+
+                    alertDiv = document.createElement('div');
+                    alertDiv.classList.add('alert', 'alert-success', 'alert-dismissible', 'fade', 'show');
+                    alertDiv.role = 'alert';
+                    alertDiv.innerHTML = `Classroom enrolled on a course
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`
+                    containerDiv = document.querySelector('.container');
+                    containerDiv.insertBefore(alertDiv, containerDiv.firstChild);
+
+                    currentCourse = document.querySelector('.current-course');
+                    currentCourse.textContent = courseName.value;
+
+                    enrollButton = document.querySelector('#teacher-courses');
+                    enrollButton.textContent = 'Enrolled';
+                }
+            })
+            .catch(error => {
+                alert(error, 'There was an error, refresh and try again')
+            })
+    }
+    modalSubmitButton.addEventListener('click', () => {
+        enroll();
+    })
+    })
+
+</script>
+{% endwith %}
+
+{% endblock %}

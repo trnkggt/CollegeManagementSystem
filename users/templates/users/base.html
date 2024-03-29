@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    {% load django_bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+
+    {% load custom_filters %}
+    {% load static %}
+
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg text-white bg-secondary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Educa</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
+            </li>
+            <li class="nav-item">
+              {% if request.user|user_is_teacher %}
+              <a class="nav-link" href="{% url 'users:teacher-profile-edit' %}">Profile</a>
+              {% elif request.user.is_staff %}
+              <a class="nav-link" href="{% url 'dashboard:admin_dashboard' %}">Dashboard</a>
+              {% else %}
+              <a class="nav-link" href="{% url 'users:student-profile-edit' %}">Profile</a>
+              {% endif %}
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Dropdown
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                {% if request.user.user_type == 'teacher' %}
+                <li><a class="dropdown-item" href="{% url 'course_list' %}">Courses</a></li>
+                <li><a class="dropdown-item" href="{% url 'teacher_courses' %}">My courses</a></li>
+                <li><a class="dropdown-item" href="{% url 'course_create' %}">Create</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'classroom:teachers_classroom' %}">Classes</a></li>
+
+                {% else %}
+                <li><a class="dropdown-item" href="{% url 'course_list' %}">Courses</a></li>
+                <li><a class="dropdown-item" href="{% url 'classroom:classroom_list' %}">Classes</a></li>
+
+                {% endif %}
+              </ul>
+            </li>
+            {% if request.user.is_authenticated %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'users:logout' %}" tabindex="-1" aria-disabled="false">Logout</a>
+              </li>
+            {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'users:login' %}" tabindex="-1" aria-disabled="false">Login</a>
+              </li>
+            {% endif %}
+            <li>
+                <a class="nav-link" href="{% url 'payments:cart' %}">Cart</a>
+            </li>
+          </ul>
+          <form class="d-flex">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-light" type="submit">Search</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+{% block content %}
+{% endblock %}
+
+{% block include_js %}
+{% endblock %}
+
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+
+
+<script>
+  const csrftoken = Cookies.get('csrftoken');
+  document.addEventListener('DOMContentLoaded', (event) => {
+
+    {% block domready %}
+
+
+    {% endblock %}
+  })
+
+</script>
+
+</body>
+</html>

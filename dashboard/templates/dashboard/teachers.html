@@ -1,0 +1,57 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Classrooms{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+
+            <div class="col-lg-3">
+                <div class="bg-light p-3">
+                    {% include 'dashboard/navbar.html' %}
+                </div>
+            </div>
+
+
+            <div class="col-lg-9">
+                <div class="p-3">
+                    <div class="row">
+
+                        <div class="col-lg-11">
+                            <h3 class="text-center">Teachers</h3>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="container">
+                      <div class="row">
+                        {% for teacher in teachers %}
+                          <div class="col-md-4">
+                            <div class="card" style="width: 18rem; margin-bottom: 20px;">
+                              <div class="card-body">
+                                <h5 class="card-title">{{ teacher }}</h5>
+                                <h5 class="card-subtitle mb-2 text-muted">
+                                    {% with teacher.subjects_taught.all as subjects %}
+                                        Subject{{ subjects|pluralize }}:
+                                        {% for subject in subjects %}
+                                        <a href="{% url 'dashboard:teachers_subject' subject.title %}">{{ subject }}</a>
+                                        {% endfor %}
+                                    {% endwith %}
+                                </h5>
+                                <a href="{% url 'users:teacher-profile' teacher.id %}" class="btn btn-secondary">Profile</a>
+                                <a href="{% url 'dashboard:teachers_classrooms' teacher.id %}" class="btn btn-secondary">Classrooms</a>
+                              </div>
+                            </div>
+                          </div>
+                        {% empty %}
+                          <p>There are no teachers yet</p>
+                        {% endfor %}
+                      </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

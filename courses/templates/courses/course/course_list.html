@@ -1,0 +1,30 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Available Courses{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        {% for course in courses %}
+            <div class="pt-5 col col-lg-6 col-md-12 col-sm-12">
+                <div class="card text-center">
+                  <div class="card-header">
+                      {{ course.title }}
+                  </div>
+                  <div class="card-body">
+                    <h5 class="card-title">Teacher: {{ course.teacher }}</h5>
+                    <p class="card-text">{{ course.overview }}</p>
+                    <a href="{% url 'course_detail' course.pk %}" class="btn btn-secondary">Go somewhere</a>
+                  </div>
+                  <div class="card-footer text-muted">
+                    {{ course.created }}
+                  </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+{% endblock %}

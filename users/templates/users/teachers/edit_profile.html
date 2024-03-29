@@ -1,0 +1,123 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <form method="POST" enctype="multipart/form-data">
+
+        <div class="row">
+            <!-- Profile Info -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Teacher Profile</h4>
+                        <!-- Image Upload -->
+                        {% if form.errors %}
+                          {% for field in form %}
+                              {% for error in field.errors %}
+                                  <div class="alert alert-danger">
+                                      <strong>{{ error|escape }}</strong>
+                                  </div>
+                              {% endfor %}
+                          {% endfor %}
+                          {% endif %}
+                        {% if messages %}
+                          <div class="container mt-4">
+                            {% for message in messages %}
+                              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                              </div>
+                            {% endfor %}
+                          </div>
+                        {% endif %}
+                            <div class="mb-3">
+                                {% if teacher.profile_picture %}
+                                    <img class="rounded-circle mt-5" width="150px" src="{{ teacher.profile_picture.url }}">
+                                {% else %}
+                                    <img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg">
+                                {% endif %}
+                                <div class="mb-3">
+                                    <label for="profile_picture" class="form-label">Profile Picture</label>
+                                    {{ teacher_form.profile_picture }}
+                                </div>
+                            </div>
+                            <!-- First Name and Last Name -->
+                            <div class="mb-3">
+                                <label for="first-name" class="form-label">First Name</label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="last-name" class="form-label">Last Name</label>
+                                {{ form.last_name }}
+                            </div>
+                            <!-- Email -->
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                {{ form.email }}                            </div>
+                            <!-- Address -->
+                            <div class="mb-3">
+                                <label for="date-of-birth" class="form-label">Address</label>
+                                {{ form.address}}                            </div>
+                            <!-- Gender -->
+                            <div class="mb-3">
+                                <label for="gender" class="form-label">Gender</label>
+                                {{ form.gender }}
+                            </div>
+                            <!-- Country -->
+                            <div class="mb-3">
+                                <label for="country" class="form-label">Country</label>
+                                {{ form.country }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="date_of_birth" class="form-label">Birth Date</label>
+                                {{ form.media }}
+                                {{ form.date_of_birth }}
+                            </div>
+
+                            {% csrf_token %}
+                    </div>
+                </div>
+            </div>
+            <!-- About, Experience, and Education -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- About -->
+                        <div class="mb-3">
+                            {{ teacher_form.about.label }}
+                            {{ teacher_form.about }}
+                        </div>
+                        <!-- Experience -->
+                        <div class="mb-3">
+                            {{ teacher_form.experience.label }}
+                            {{ teacher_form.experience}}
+                        </div>
+                        <!-- Education -->
+                        <div class="mb-3">
+                            {{ teacher_form.education.label }}
+                            {{ teacher_form.education }}
+                        </div>
+                        <div class="mb-3">
+                            <p>
+                                {% with teacher.subjects_taught.all as subjects %}
+                                    Subject{{ subjects|pluralize }}:
+                                    {% for subject in subjects %}
+                                        {{ subject }}
+                                    {% endfor %}
+                                {% endwith %}
+                            </p>
+
+                        </div>
+
+                    </div>
+                    <div class="mb-3">
+                            <input class="btn btn-secondary" type="submit" value="Save">
+                        </div>
+                </div>
+            </div>
+        </div>
+        </form>
+
+    </div>
+{% endblock %}

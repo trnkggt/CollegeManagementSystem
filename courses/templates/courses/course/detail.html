@@ -1,0 +1,52 @@
+{% extends 'users/base.html' %}
+
+{% block title %}{{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+        {% if messages %}
+            <div class="container mt-4">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <div class="row">
+            <div class="col-lg-8">
+                <h1>{{ course.title }}</h1>
+                <p>Course Description: {{ course.overview }}</p>
+                <ul>
+                    <li><strong>Course Code:</strong> {{ course.code }}</li>
+                    <li><strong>Instructor:</strong> {{ course.teacher }}</li>
+                    <li><strong>Credits:</strong> {{ course.credits }}</li>
+                    <li><strong>Prerequisites:</strong>
+                        {% for prereq in course.prerequisites.all %}
+                            <a href="{% url 'course_detail' prereq.pk %}" class="link-secondary link-underline-opacity-25 active">{{ prereq.code }}</a>
+                        {% empty %}
+                            No prerequisite
+                        {% endfor %}
+                    </li>
+                </ul>
+                <form method="POST" action="{% url 'payments:add_cart' course.id %}">
+                    {% csrf_token %}
+                    {% if user.user_type == "student" %}
+                        {% if course in request.user.student_profile.courses.all %}
+                            <span>You already own this course.</span>
+                        {% else %}
+                            <button class="btn btn-primary">Add to cart</button>
+                        {% endif %}
+                    {% else %}
+                        <span>You must have an 'Student' account to buy this course.</span>
+                    {% endif %}
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+
+
+{% endblock %}

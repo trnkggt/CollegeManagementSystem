@@ -1,0 +1,111 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2>{{ classroom.title }}</h2>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Student Capacity:</dt>
+                        <dd class="col-sm-8">{{ classroom.student_count }}</dd>
+
+                        <dt class="col-sm-4">Subject:</dt>
+                        <dd class="col-sm-8">{{ classroom.subject }}</dd>
+
+                        <dt class="col-sm-4">Active:</dt>
+                        <dd class="col-sm-8">{{ classroom.active }}</dd>
+
+                        <dt class="col-sm-4">Start date:</dt>
+                        <dd class="col-sm-8">{{ classroom.start_date }}</dd>
+
+                        <dt class="col-sm-4">End date:</dt>
+                        <dd class="col-sm-8">{{ classroom.end_date }}</dd>
+
+                        <dt class="col-sm-4">Current Course:</dt>
+                        <dd class="col-sm-8 current-course">
+                            {% if course %}
+                                {{ course }}
+                            {% else %}
+                                No current course
+                            {% endif %}
+                        </dd>
+                    </dl>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            {% if classroom.course in request.user.student_profile.courses.all %}
+                                {% if request.user.student_profile in classroom.students.all %}
+                                <div class="changeToDetail">
+                                    You are enrolled in this class: <a href="{% url 'classroom:student_classroom_module' classroom.id 1 %}" class="btn btn-secondary">Details</a>
+                                </div>
+                                {% else %}
+                                    You already have course for this class: <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#enrollModal">Click here to join</button>
+                                {% endif %}
+                                <div class="modal fade" id="enrollModal" tabindex="-1" aria-labelledby="enrollModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="enrollModalLabel">
+                                                    Enroll on {{ classroom.title }}
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+
+                                            </div>
+                                            <div class="modal-body" id="modalBody">
+                                                <p>Are you sure you want to enroll on "{{ classroom.title }}"?</p>
+                                                <ul>
+                                                    <li>Start date: {{ classroom.start_date }}</li>
+                                                    <li>End date: {{ classroom.end_date }}</li>
+                                                    <li>Teacher: {{ classroom.teacher }}</li>
+                                                </ul>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" id="enrollB" class="btn btn-primary">Enroll</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            {% else %}
+                                You don't have course for this class: <a href="#">Click here to buy</a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block domready %}
+    function enroll() {
+        enrollUrl = "{% url 'classroom:enroll_student' classroom.id %}";
+        let options = {
+            'method': "POST",
+            'headers': {'X-CSRFToken': csrftoken}
+        }
+        fetch(enrollUrl, options)
+            .then(response => response.json())
+            .then(data => {
+                if (data['status']==='ok') {
+                    modalEl = document.getElementById('enrollModal');
+                    modalIn = bootstrap.Modal.getInstance(modalEl);
+                    modalIn.hide();
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                alert("There was an error, please try again");
+            })
+    }
+    enrollButton = document.getElementById("enrollB");
+    enrollButton.addEventListener('click', () => {
+        enroll();
+    });
+{% endblock %}

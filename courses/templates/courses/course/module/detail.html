@@ -1,0 +1,93 @@
+{% load custom_filters %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-9">
+            <!-- render messages -->
+            {% if messages %}
+                <div class="container mt-4">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Course Title -->
+            <h1>{{ module.title }}</h1>
+
+            <!-- Content for Module 1 (initially empty) -->
+            <div id="module-description">
+                <p>{{ module.description }}</p>
+            </div>
+            <div class="content" id="content">
+                {% for content in module.contents.all %}
+                    <div class="border border-3 p-2 content-item" data-id="{{ content.id }}">
+                        {% with item=content.item %}
+                            <p>{{ item }} ({{ item|model_name }})</p>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <a href="{% url 'content_update' module.id item|model_name item.id %}" class="btn">
+                                            <i class="fas fa-edit"></i>
+                                    </a>
+                                </div>
+                                <div class="col-lg-6">
+
+                                    <a data-id="{{ item.id }}" data-model="{{ item|model_name }}"  type="submit" class="btn delete">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+
+                                </div>
+                            </div>
+
+                        {% endwith %}
+                    </div>
+                    <br>
+                {% empty %}
+                    <p>There are no contents in this module yet</p>
+                {% endfor %}
+                <br>
+                <div class="container">
+                    <h3>Add content</h3>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <a href="{% url 'content_create' module.id 'text' %}" class="btn btn-primary">Text</a>
+                        </div>
+                        <div class="col-lg-3">
+                            <a href="{% url 'content_create' module.id 'image' %}" class="btn btn-secondary">Image</a>
+                        </div>
+                        <div class="col-lg-3">
+                            <a href="{% url 'content_create' module.id 'file' %}" class="btn btn-success">File</a>
+                        </div>
+                        <div class="col-lg-3">
+                            <a href="{% url 'content_create' module.id 'video' %}" class="btn btn-danger">Video</a>
+                        </div>
+                    </div>
+                    <br>
+                    <h3>Create/Edit a Quiz</h3>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="btn-group">
+                            {% if module.quiz %}
+                                <a href="{% url 'quizes:edit_quiz' module.id  module.quiz.pk %}" class="btn btn-secondary me-2">Edit a quiz</a>
+                                <br>
+                                <form method="POST" action="{% url 'quizes:delete_quiz' module.quiz.pk %}">
+                                    {% csrf_token %}
+                                    <button class="btn btn-danger me-2" type="submit">Delete</button>
+                                </form>
+                            {% else %}
+                                <a href="{% url 'quizes:create' module.id %}" class="btn btn-secondary">Create Quiz</a>
+                            {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+

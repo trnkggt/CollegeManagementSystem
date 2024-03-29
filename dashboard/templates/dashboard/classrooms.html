@@ -1,0 +1,59 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Classrooms{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+
+            <div class="col-lg-3">
+                <div class="bg-light p-3">
+                    {% include 'dashboard/navbar.html' %}
+                </div>
+            </div>
+
+
+            <div class="col-lg-9">
+                <div class="p-3">
+                    <div class="row">
+                        <div class="col-lg-1">
+                            <a href="{% url 'classroom:classroom_create' %}" class="btn btn-secondary">Create</a>
+                        </div>
+                        <div class="col-lg-11">
+                            <h3 class="text-center">Classrooms</h3>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="container">
+                      <div class="row">
+                        {% for classroom in classrooms %}
+                          <div class="col-md-4">
+                            <div class="card" style="width: 18rem; margin-bottom: 20px;">
+                              <div class="card-body">
+                                <h5 class="card-title">Name: {{ classroom.title }}</h5>
+                                <h5 class="card-subtitle mb-2 text-muted">Subject: {{ classroom.subject }}</h5>
+                                <h5 class="card-subtitle mb-2 text-muted">{{ classroom.teacher|title }}</h5>
+                                <ul>
+                                  <li>Start: {{ classroom.start_date }}</li>
+                                  <li>End: {{ classroom.end_date }}</li>
+                                  <li>Active: {{ classroom.active }}</li>
+                                  <li>Graduated: {{ classroom.graduated }}</li>
+                                </ul>
+                                <a href="#" class="btn btn-secondary">Details</a>
+                                <a href="{% url 'classroom:classroom_update' classroom.id %}" class="btn btn-secondary">Edit</a>
+                              </div>
+                            </div>
+                          </div>
+                        {% empty %}
+                          <p>There are no classrooms yet</p>
+                        {% endfor %}
+                      </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

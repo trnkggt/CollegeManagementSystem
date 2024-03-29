@@ -1,0 +1,18 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Logged out{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="alert alert-secondary text-center">
+                <h2 class="mb-4">You have been logged out</h2>
+                <p>Thank you for using our website.</p>
+                <p><a href="{% url 'users:login' %}" class="btn btn-dark">Login</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

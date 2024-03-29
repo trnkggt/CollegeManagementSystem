@@ -1,0 +1,45 @@
+{% extends 'users/base.html' %}
+
+{% block title %}My classrooms{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="p-3">
+                    <div class="row">
+
+                        <div class="col-lg-11">
+                            <h3 class="text-center">My classrooms</h3>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="container">
+                      <div class="row">
+                        {% for classroom in classrooms %}
+                          <div class="col-md-4">
+                            <div class="card" style="width: 18rem; margin-bottom: 20px;">
+                              <div class="card-body">
+                                <h5 class="card-title">{{ classroom.title }}</h5>
+                                <h5 class="card-subtitle mb-2 text-muted">{{ classroom.teacher }}</h5>
+                                <ul>
+                                  <li>Start: {{ classroom.start_date }}</li>
+                                  <li>End: {{ classroom.end_date }}</li>
+                                </ul>
+                                <a href="{% url 'classroom:classroom_details' classroom.id %}" class="btn btn-secondary">Details</a>
+                              </div>
+                            </div>
+                          </div>
+                        {% empty %}
+                          <p>You dont have any active/future classrooms yet.</p>
+                        {% endfor %}
+                      </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Shopping cart{% endblock %}
+
+{% block content %}
+<section class="h-100">
+  <div class="container h-100 py-5">
+    {% if messages %}
+        <div class="container mt-4">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-10">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h3 class="fw-normal mb-0 text-black">Shopping Cart</h3>
+          <div>
+            <p class="mb-0"><span class="text-muted">Sort by:</span> <a href="#!" class="text-body">price <i
+                  class="fas fa-angle-down mt-1"></i></a></p>
+          </div>
+        </div>
+
+        <!-- Table for Cart Items -->
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Title</th>
+              <th scope="col">Price</th>
+              <th scope="col">Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in cart %}
+              <tr>
+                <td>{{ item.title }}</td>
+                <td>${{ item.price }}</td>
+                <td>
+                  <form method="POST" action="{% url 'payments:cart_remove' item.course.id %}">
+                    {% csrf_token %}
+                    <button class="btn"><i class="fas fa-trash fa-md"></i></button>
+                  </form>
+                </td>
+              </tr>
+            {% empty %}
+              <p>No items in your cart</p>
+            {% endfor %}
+
+          </tbody>
+        </table>
+
+        <!--   Discount Code Section without Card Styling -->
+        <div class="mb-4">
+          <div class="p-4 d-flex flex-row align-items-center">
+            <div class="form-outline flex-fill me-3">
+              <input type="text" id="form1" class="form-control form-control-lg" />
+              <label class="form-label" for="form1">Discount code</label>
+            </div>
+            <button type="button" class="btn btn-outline-secondary btn-lg">Apply</button>
+          </div>
+        </div>
+
+        {% if cart|length > 0 %}
+                <h4>Total price: ${{ cart.get_total_price }}</h4>
+                <form method="POST" action="{% url 'payments:cart_clear' %}">
+                  {% csrf_token %}
+                  <button class="btn btn-secondary">Clear cart</button>
+                </form>
+        <!-- Proceed to Pay Button -->
+          <div class="mb-4">
+            <div class="p-4">
+              <a href="{% url 'payments:process' %}" class="btn btn-secondary btn-block btn-lg">Proceed to checkout</a>
+            </div>
+          </div>
+        {% endif %}
+        <!-- Proceed to Pay Button -->
+
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

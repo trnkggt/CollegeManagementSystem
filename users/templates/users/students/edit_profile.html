@@ -1,0 +1,137 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Your profile{% endblock %}
+
+{% block content %}
+<div class="container rounded bg-white mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-3 border-right">
+            <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+                {% if student.profile_picture %}
+                    <img class="rounded-circle mt-5" width="150px" src="{{ student.profile_picture.url }}">
+                {% else %}
+                    <img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg">
+                {% endif %}
+
+
+                <span class="font-weight-bold">{{ request.user.first_name }} {{ request.user.last_name }}</span>
+                <span class="text-black-50">{{ request.user.email }}</span>
+                <span> </span>
+
+            </div>
+        </div>
+        <div class="col-md-5 border-right">
+            <div class="p-3 py-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-right">Profile Settings</h4>
+                </div>
+                <form method="POST" enctype="multipart/form-data">
+                    {% if form.errors %}
+                          {% for field in form %}
+                              {% for error in field.errors %}
+                                  <div class="alert alert-danger">
+                                      <strong>{{ error|escape }}</strong>
+                                  </div>
+                              {% endfor %}
+                          {% endfor %}
+                      {% endif %}
+                    {% if messages %}
+                      <div class="container mt-4">
+                        {% for message in messages %}
+                          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <label class="labels">Name</label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col-md-6"><label class="labels">Surname</label>
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <label class="labels">Address</label>
+                                {{ form.address }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="labels">Email ID</label>
+                                {{ form.email }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="labels">Gender</label>
+                                {{ form.gender }}                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label class="labels">Country</label>
+                                {{ form.country }}                    </div>
+                            <div class="col-md-6"><label class="labels">Date of birth</label>
+                                {{ form.media }}
+                                {{ form.date_of_birth }}
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                {{ image_form }}
+                            </div>
+                        </div>
+                        <div class="mt-5 text-center">
+                            <input class="btn btn-secondary profile-button" type="submit" value="Update">
+                        </div>
+
+
+                            {% csrf_token %}
+                    </form>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="p-3 py-5">
+                <div class="d-flex justify-content-between align-items-center experience">
+                    <span>Additional info</span>
+                    <span class="border px-3 p-1 add-experience">
+                    <i class="fa fa-plus">
+                    </i>&nbsp;
+                        {% if student.enrolled %}Enrolled{% else %}Not enrolled{% endif %}
+                    </span>
+                </div>
+                <br>
+                <div class="col-md-12">
+                    <label class="labels">Enrollement day: {{ student.enrollement_day }}</label>
+                    <input type="text" class="form-control disabled" readonly aria-disabled="true" value="">
+                </div>
+                <br>
+                <div class="col-md-12">
+                    <label class="labels">Graduated:</label>
+                    <input type="text" class="form-control" readonly aria-disabled="true"  value="{{ student.has_graduated }}">
+                </div>
+                <br>
+                <div class="col-md-12">
+                    <label class="labels">Courses bought:</label>
+                    <ul>
+                    {% for course in student.courses.all %}
+                        <li>{{ course }}</li>
+                    {% endfor %}
+                    </ul>
+                    <label class="labels">Courses Passed:</label>
+                    <ul>
+                    {% for course in student.courses_passed.all %}
+                        <li>{{ course }}</li>
+                    {% empty %}
+                        No passed course yet.
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <p>want to change password? <a class="btn btn-secondary" href="{% url 'users:password_change' %}">click here</a></p>
+    </div>
+
+</div>
+{% endblock %}

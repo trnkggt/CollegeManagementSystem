@@ -1,0 +1,61 @@
+{% load custom_filters %}
+{% load classroom_filters %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-9">
+            <!-- render messages -->
+            {% if messages %}
+                <div class="container mt-4">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Course Title -->
+            <h1>{{ module.title }}</h1>
+
+            <!-- Content for Module 1 (initially empty) -->
+            <div id="module-description">
+                <p>{{ module.description }}</p>
+            </div>
+            <div class="content" id="content">
+                {% for content in module.contents.all %}
+                    <div class="content-item" data-id="{{ content.id }}">
+                        {% with item=content.item %}
+                            {{ item.render }}
+
+                        {% endwith %}
+                    </div>
+                    <br>
+                {% empty %}
+                    <p>There are no contents in this module yet</p>
+                {% endfor %}
+                <br>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    {% with quiz=module.quiz %}
+                        {% if quiz %}
+                        <p><strong>Quiz for this week's module</strong></p>
+                            {% if quiz|eligible_for_quiz:request.user.student_profile.id %}
+                                You already did this quiz.
+                                <a href="{% url 'classroom:student_results' %}">Tap here to see your results</a>
+                            {% else %}
+                                <p>Open date: {{ quiz.open_date }}</p>
+                                <p>Close date: {{ quiz.close_date }}</p>
+                                <a href="{% url 'quizes:quiz_start' module.quiz.pk classroom.id %}" target="_blank" onclick="window.close()" class="btn btn-secondary {% if quiz.active %}{% else %}disabled{% endif %}" role="button">Start</a>
+                            {% endif %}
+
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

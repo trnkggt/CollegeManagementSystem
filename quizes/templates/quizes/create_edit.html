@@ -1,0 +1,35 @@
+{% extends 'users/base.html' %}
+{% load django_bootstrap5 %}
+{% load static %}
+
+{% block title %}Quiz{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Create Quiz for "{{ module }}"</h3>
+                </div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="card-body">
+                        {% bootstrap_form quiz_form %}
+                        <br>
+                        {% bootstrap_formset formset %}
+                    </div>
+                    <input class="btn btn-primary" type="submit" value="Create">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block include_js %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="{% static 'quiz.js' %}"></script>
+
+{% endblock %}

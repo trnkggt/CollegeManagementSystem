@@ -1,0 +1,18 @@
+{% extends "users/base.html" %}
+
+{% block content %}
+
+<div class="container m-5">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Your academic achievements</h5>
+        <ol>
+          {% for result in student_results %}
+            <li>You {% if result.passed %}passed {% else %}failed {% endif %} {{ result.quiz }}</li>
+          {% endfor %}
+        </ol>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

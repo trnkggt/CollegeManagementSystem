@@ -1,0 +1,73 @@
+{% extends 'users/base.html' %}
+
+{% block title %}{% endblock %}
+{% load static %}
+
+{% block content %}
+{% with course=module.course %}
+ <style>
+        .content-item {
+            border: 1px solid #ccc;
+            margin: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .selected {
+            background-color: #e0e0e0;
+        }
+    </style>
+<div class="container-fluid">
+    <div class="row">
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column list-group"  id="modules">
+                    {% for m in course.modules.all %}
+                    <li data-id="{{ m.id }}" class="nav-item list-group-item {% if m == module %}bg-secondary{% endif %}">
+                        <a class="nav-link active text-dark" href="{% url 'module_detail' course.slug m.id %}">
+                            {{ m.title }}
+                        </a>
+                    </li>
+                    {% empty %}
+                    <li>
+                        No modules yet.
+                    </li>
+                    {% endfor %}
+                </ul>
+                <br>
+                <div class="nav-item">
+                        <a class="nav-link active" href="{% url 'module_update' course.id %}">
+                            Add/Edit modules
+                        </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="pt-3 pb-2 mb-3">
+                <h2>{{ course.title }} module {{ module.order }}</h2>
+            </div>
+
+            <!-- Module Content -->
+            {% include 'courses/course/module/detail.html' with module=module %}
+
+        </main>
+    </div>
+</div>
+{% endwith %}
+{% endblock %}
+
+{% block include_js %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5sortable/0.13.3/html5sortable.min.js">
+
+    </script>
+    <script>const moduleOrderUrl = '{% url "module_order" "module" %}';</script>
+    <script>const contentOrderUrl = '{% url "module_order" "content" %}';</script>
+    <script>const ccontentDeleteUrl = '{% url "content_delete" %}';</script>
+    <script src="{% static 'courses.js' %}"></script>
+
+{% endblock %}
+
+{% block domready %}
+
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Your profile{% endblock %}
+
+{% block content %}
+<div class="container rounded bg-white mt-5 mb-5">
+    {% with user=student.user %}
+    <div class="row">
+        <div class="col-lg-2 border-right">
+            <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+                {% if student.profile_picture %}
+                    <img class="rounded-circle mt-5" width="150px" src="{{ student.profile_picture.url }}">
+                {% else %}
+                    <img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg">
+                {% endif %}
+
+
+                <span class="font-weight-bold">{{ user.first_name }} {{ user.last_name }}</span>
+                <span class="text-black-50">{{ user.email }}</span>
+                <span> </span>
+
+            </div>
+        </div>
+        <div class="container mt-5 col-lg-10">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>User Profile</h2>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-sm-4">Username:</dt>
+                                <dd class="col-sm-8">{{ student.user.username }}</dd>
+
+                                <dt class="col-sm-4">Email:</dt>
+                                <dd class="col-sm-8">{{ user.email }}</dd>
+
+                                <dt class="col-sm-4">Date of Birth:</dt>
+                                <dd class="col-sm-8">{{ user.date_of_birth }}</dd>
+
+                                <dt class="col-sm-4">Address:</dt>
+                                <dd class="col-sm-8">{{ user.address }}</dd>
+
+                                <dt class="col-sm-4">Gender:</dt>
+                                <dd class="col-sm-8">{{ user.get_gender_display }}</dd>
+
+                                <dt class="col-sm-4">Country:</dt>
+                                <dd class="col-sm-8">{{ user.country }}</dd>
+
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endwith %}
+
+<!--        <div class="col-md-4">-->
+<!--            <div class="p-3 py-5">-->
+<!--                <div class="d-flex justify-content-between align-items-center experience">-->
+<!--                    <span>Additional info</span>-->
+<!--                    <span class="border px-3 p-1 add-experience">-->
+<!--                    <i class="fa fa-plus">-->
+<!--                    </i>&nbsp;-->
+<!--                        {% if student.enrolled %}Enrolled{% else %}Not enrolled{% endif %}-->
+<!--                    </span>-->
+<!--                </div>-->
+<!--                <br>-->
+<!--                <div class="col-md-12">-->
+<!--                    <label class="labels">Enrollement day: {{ student.enrollement_day }}</label>-->
+<!--                    <input type="text" class="form-control disabled" readonly aria-disabled="true" value="">-->
+<!--                </div>-->
+<!--                <br>-->
+<!--                <div class="col-md-12">-->
+<!--                    <label class="labels">Graduated:</label>-->
+<!--                    <input type="text" class="form-control" readonly aria-disabled="true"  value="{{ student.has_graduated }}">-->
+<!--                </div>-->
+<!--                <div class="col-md-12">-->
+<!--                    <label class="labels">Paid tuition:</label>-->
+<!--                    <input type="text" class="form-control" readonly  value="{{ student.has_paid }}">-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+    </div>
+</div>
+
+{% endblock %}

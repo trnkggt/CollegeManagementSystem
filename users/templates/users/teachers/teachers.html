@@ -1,0 +1,50 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+    {% with user=teacher.user %}
+    <div class="row">
+        <div class="col-md-4">
+            {% if teacher.profile_picture %}
+                <img class="mt-5" width="150px" src="{{ teacher.profile_picture.url }}">
+            {% else %}
+                <img class="mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg">
+            {% endif %}
+        </div>
+        <div class="col-md-8">
+            <!-- Teacher's Information -->
+            <h2>Teacher's Name</h2>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Education:</strong> {{ teacher.education }}</p>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <!-- Teacher's Bio -->
+            <h3>Biography</h3>
+            <p>{{ teacher.about }}</p>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <!-- Teaching Subjects -->
+            <h3>Teaching Subjects</h3>
+            <ul>
+                {% for subject in teacher.subjects_taught.all %}
+                <li>{{ subject }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <!-- Achievements and Awards -->
+            <h3>My experience</h3>
+            <p>{{ teacher.experience }}</p>
+        </div>
+    </div>
+</div>
+{% endwith %}
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'users/base.html' %}
+
+{% block title %}{% endblock %}
+{% load static %}
+
+{% block content %}
+{% with course=module.course %}
+
+<div class="container-fluid">
+    <div class="row">
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column list-group"  id="modules">
+                    {% for m in course.modules.all %}
+                    <li data-id="{{ m.id }}" class="nav-item list-group-item {% if m == module %}bg-secondary{% endif %}">
+                        <a class="nav-link active text-dark" href="{% url 'classroom:student_classroom_module' classroom.id m.id %}">
+                            {{ m.title }} | {{ m.order }}
+                        </a>
+                    </li>
+                    {% empty %}
+                    <li>
+                        No modules yet.
+                    </li>
+                    {% endfor %}
+                </ul>
+                <br>
+
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="pt-3 pb-2 mb-3">
+                <h2>{{ classroom }} class module {{ module.order }}</h2>
+            </div>
+
+            <!-- Module Content -->
+            {% include 'classroom/module/detail.html' with module=module %}
+
+        </main>
+    </div>
+</div>
+{% endwith %}
+{% endblock %}
+
+{% block domready %}
+
+    function CloseOld() {
+        // Open the link in a new tab
+        console.log('traki');
+        // Close the current tab
+        window.close();
+    }
+
+{% endblock %}
+
