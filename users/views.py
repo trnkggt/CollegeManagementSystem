@@ -13,7 +13,7 @@ from django.core.mail import send_mail
 from .tokens import email_verification_token
 from .forms import NewUserForm, CustomAuthForm, ProfileForm, UserUpdateForm, TeacherProfileForm
 from .models import StudentProfile, Teacher, CustomUser
-from classroom.models import Classroom
+from .tasks import confirmation
 from courses.utils import is_teacher
 
 def home(request):
@@ -26,28 +26,20 @@ def register(request):
 
         if form.is_valid():
             user_type = form.cleaned_data['user_type']
-            if user_type == 'student':
+            if user_type == 'S':
                 user = form.save(commit=False)
                 user.first_name = user.first_name.title()
                 user.last_name = user.last_name.title()
                 user.user_type = user_type
                 user.is_active = False
                 user.save()
+
                 StudentProfile.objects.create(user=user)
 
                 current_site = get_current_site(request)
-                mail_subject = 'Email activation'
-                message = render_to_string('auth/activate_email.html', {
-                    'user': user,
-                    'domain': current_site.domain,
-                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                    'token': email_verification_token.make_token(user),
-                })
-                to_email = user.email
-                send_mail(mail_subject,
-                                     message,
-                                    settings.EMAIL_HOST_USER,
-                                     recipient_list=[to_email,])
+                confirmation.apply_async(args=(user.id, current_site.domain),
+                                         countdown=10)
+
                 notification = ('Email verification URL sent, please check your'
                                 ' email inbox.')
                 # login(request, user, backend=settings.AUTHENTICATION_BACKENDS[0])

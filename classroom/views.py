@@ -5,6 +5,8 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib import messages
+from django.db.models import Count, Q
+
 
 from .forms import ClassroomForm
 from .models import Classroom
@@ -147,9 +149,18 @@ def graduate_student(request, course_id, classroom_id):
     course = get_object_or_404(Course, id=course_id)
     classroom = get_object_or_404(Classroom, id=classroom_id)
 
-    # student = request.user.student_profile
-    #
+    student = request.user.student_profile
+    results = QuizResults.objects.filter(student=student).values(
+        'student').annotate(
+        total=Count('id'),
+        passed_count=Count('id', filter=Q(passed=True)),
+    )
     # classroom.students.remove(student)
+    data = {
+        "student": student,
+        "course": course,
+
+    }
     # student.courses_passed.add(course)
 
     ## send mail using celery

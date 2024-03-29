@@ -39,7 +39,7 @@
                 Dropdown
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                {% if request.user.user_type == 'teacher' %}
+                {% if request.user.user_type == 'T' %}
                 <li><a class="dropdown-item" href="{% url 'course_list' %}">Courses</a></li>
                 <li><a class="dropdown-item" href="{% url 'teacher_courses' %}">My courses</a></li>
                 <li><a class="dropdown-item" href="{% url 'course_create' %}">Create</a></li>

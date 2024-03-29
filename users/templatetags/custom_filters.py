@@ -11,5 +11,6 @@ def user_is_teacher(user):
 def model_name(obj):
     try:
         return obj._meta.model_name
-    except AttributeError:
+    except AttributeError as e:
+        print(e)
         return None
