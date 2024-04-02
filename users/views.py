@@ -5,10 +5,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils import timezone
 from django.conf import settings
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.template.loader import render_to_string
-from django.utils.encoding import force_bytes
-from django.core.mail import send_mail
+from django.utils.http import urlsafe_base64_decode
 
 from .tokens import email_verification_token
 from .forms import NewUserForm, CustomAuthForm, ProfileForm, UserUpdateForm, TeacherProfileForm

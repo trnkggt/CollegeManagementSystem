@@ -27,3 +27,10 @@ def confirmation(user_pk, domain):
               message,
               settings.EMAIL_HOST_USER,
               recipient_list=[user.email, ])
+
+
+@shared_task
+def sent_from_admin(email_subject, email_body, to_email):
+    send_mail(email_subject, email_body,
+              from_email=settings.EMAIL_HOST_USER,
+              recipient_list=[to_email, ])

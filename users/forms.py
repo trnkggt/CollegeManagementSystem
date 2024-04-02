@@ -3,13 +3,12 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, User
 from django.utils import timezone
 from django_countries.widgets import CountrySelectWidget
 from django_countries import countries
-from django.core.mail import send_mail
 
 import re
 from bootstrap_datepicker_plus.widgets import DatePickerInput
 
 from .models import CustomUser, StudentProfile, Teacher
-
+from .tasks import sent_from_admin
 
 class NewUserForm(UserCreationForm):
     GENDER_CHOICES = (
@@ -182,9 +181,7 @@ class UserAdminUpdateForm(UserChangeForm):
         email_body = self.cleaned_data['email_body']
         to_email = self.cleaned_data['email']
         if email_subject != '' and email_body != '':
-            send_mail(email_subject, email_body,
-                      from_email=['admin@e-duca.com',],
-                      recipient_list=[to_email,])
+            sent_from_admin.delay(email_subject, email_body, to_email)
         return self.cleaned_data
 
 class UserUpdateForm(forms.ModelForm):
