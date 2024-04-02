@@ -117,7 +117,6 @@ def enroll_student(request, classroom_id):
         student_profile.enrolled = True
         classroom.save()
         student_profile.save()
-        print(classroom, student_profile)
         return JsonResponse({'status': 'ok'})
     except Exception as e:
         print(e)

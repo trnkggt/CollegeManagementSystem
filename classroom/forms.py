@@ -98,14 +98,6 @@ class ClassroomForm(forms.ModelForm):
                                                 ' it should be more than 0')
         return count
 
-    def clean_start_date(self):
-        date = self.cleaned_data['start_date']
-        date_today = timezone.now()
-        diff =  date - date_today
-        if diff.days < 15:
-            raise forms.ValidationError(message='Starting date should be at least'
-                                                ' 15 days from now')
-        return date
 
     def clean_end_date(self):
         data = self.cleaned_data
