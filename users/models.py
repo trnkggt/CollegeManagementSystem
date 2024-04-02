@@ -55,6 +55,11 @@ class StudentProfile(models.Model):
                                 related_name='student_profile')
     has_graduated = models.BooleanField(default=False, null=True)
     enrolled = models.BooleanField(default=False, null=True)
+    classroom = models.ForeignKey("classroom.Classroom",
+                                  on_delete=models.CASCADE,
+                                  related_name="enrolled_students",
+                                  null=True,
+                                  blank=True)
     profile_picture = ResizedImageField(size=[150, 150],
                                         upload_to='images/student_profiles/',
                                         null=True)
