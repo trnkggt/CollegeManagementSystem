@@ -32,7 +32,7 @@
                 </ul>
                 <form method="POST" action="{% url 'payments:add_cart' course.id %}">
                     {% csrf_token %}
-                    {% if user.user_type == "student" %}
+                    {% if user.user_type == "S" %}
                         {% if course in request.user.student_profile.courses.all %}
                             <span>You already own this course.</span>
                         {% else %}

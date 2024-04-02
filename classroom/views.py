@@ -114,12 +114,16 @@ def enroll_student(request, classroom_id):
     try:
         classroom = get_object_or_404(Classroom, id=classroom_id)
         student_profile = request.user.student_profile
-        classroom.students.add(student_profile)
-        student_profile.enrolled = True
-        student_profile.classroom = classroom
-        classroom.save()
-        student_profile.save()
-        return JsonResponse({'status': 'ok'})
+        # Check if student meets requirements for a course
+        if all(prerequisite in student_profile.courses_passed.all() for prerequisite in classroom.course.prerequisites.all()):
+            classroom.students.add(student_profile)
+            student_profile.enrolled = True
+            student_profile.classroom = classroom
+            classroom.save()
+            student_profile.save()
+            return JsonResponse({'status': 'ok'})
+        else:
+            return JsonResponse({"status": "error", 'message': "You dont have all the prerequisites fulfilled for this course"})
     except Exception as e:
         print(e)
         return JsonResponse({"status": "error", "message": "An error occurred"}, status=500)
