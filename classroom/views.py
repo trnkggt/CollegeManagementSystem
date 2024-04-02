@@ -13,6 +13,7 @@ from .models import Classroom
 from courses.utils import is_teacher
 from courses.models import Course, Module
 from quizes.models import QuizResults
+from users.models import CoursePassing
 
 @login_required
 @user_passes_test(lambda user: user.is_staff)
@@ -115,6 +116,7 @@ def enroll_student(request, classroom_id):
         student_profile = request.user.student_profile
         classroom.students.add(student_profile)
         student_profile.enrolled = True
+        student_profile.classroom = classroom
         classroom.save()
         student_profile.save()
         return JsonResponse({'status': 'ok'})
@@ -154,16 +156,23 @@ def graduate_student(request, course_id, classroom_id):
         total=Count('id'),
         passed_count=Count('id', filter=Q(passed=True)),
     )
-    # classroom.students.remove(student)
+    passed = results[0]['total'] == results[0]['passed_count']
+    classroom.students.remove(student)
+    student.enrolled = False
+    student.classroom = None
     data = {
         "student": student,
         "course": course,
-
+        "passed": passed,
+        "score": results[0]['passed_count'] * 10
     }
-    # student.courses_passed.add(course)
+    if passed:
+        CoursePassing.objects.create(**data)
 
     ## send mail using celery
 
     messages.info(request, "Congratulations on your graduation, email has been sent to you.",)
+    student.save()
+
 
     return redirect("home")

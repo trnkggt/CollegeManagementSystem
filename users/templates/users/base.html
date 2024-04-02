@@ -49,7 +49,11 @@
                 {% else %}
                 <li><a class="dropdown-item" href="{% url 'course_list' %}">Courses</a></li>
                 <li><a class="dropdown-item" href="{% url 'classroom:classroom_list' %}">Classes</a></li>
-
+                  {% if request.user.student_profile.enrolled == True %}
+                    {% with classroom=request.user.student_profile.classroom %}
+                    <li><a class="dropdown-item" href="{% url 'classroom:student_classroom_module' classroom.pk classroom.course.modules.all.first.pk %}">My Classroom</a></li>
+                    {% endwith %}
+                  {% endif %}
                 {% endif %}
               </ul>
             </li>
