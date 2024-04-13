@@ -14,6 +14,7 @@ from courses.utils import is_teacher
 from courses.models import Course, Module
 from quizes.models import QuizResults
 from users.models import CoursePassing
+from .tasks import graduation
 
 @login_required
 @user_passes_test(lambda user: user.is_staff)
@@ -173,7 +174,7 @@ def graduate_student(request, course_id, classroom_id):
     if passed:
         CoursePassing.objects.create(**data)
 
-    ## send mail using celery
+    graduation.delay(course.title, student.user.first_name, student.user.last_name, student.user.email)
 
     messages.info(request, "Congratulations on your graduation, email has been sent to you.",)
     student.save()
